@@ -45,3 +45,21 @@ python train.py --backend official-tiny --device cuda --market-root /your/local/
 ## 早期诊断
 
 `diagnostics/numpy-route-c/` 保留第一版 NumPy 合成诊断与结果，仅供比较；正式实现以仓库根目录的 PyTorch 版本为准。
+
+
+## 断点续训与进度
+
+正式启动前保持相同的数据和训练参数（尤其是总轮数、warmup、P/K 和 seed）。下例可用 CPU 验证操作，不读真实图片：
+
+```sh
+mkdir -p runs
+python train.py --epochs 2 --p 2 --k 2 --max-steps 10 --skip-eval \
+  --resume-state runs/resume.pt --save-every-steps 10 --progress-every 10
+python train.py --epochs 2 --p 2 --k 2 --skip-eval \
+  --resume-from runs/resume.pt --save-every-steps 10 --progress-every 10
+```
+
+- 新任务用 `--resume-state`，恢复用 `--resume-from`；默认写回原断点。每 10 步、每轮结束和达到显式步数上限时保存模型、优化器、随机状态和数据游标。强制停止后从最近写完整的断点恢复，之后未保存的步数会重跑。只加载自己任务产生的本地断点。
+- `--max-steps` 是整个任务的累计上限，不是本次额外运行的步数。继续到第 20 步须把上限改为 20，或省略它继续至既定轮数。恢复时不能改训练配置或在两个进程同时写同一断点。
+- `--progress-every 10` 实时输出一行 JSON（累计步数、区间平均损失、学习率、CUDA 峰值显存）。`training_seconds` 和峰值显存只代表当前进程段。断点与结果留在本地，勿提交数据或权重。
+- CPU 合成验证比较了中途停止和轮末停止两种情况；恢复后的模型、优化器状态和损失日志与连续运行一致。CUDA 上的逐位重现尚未验证。

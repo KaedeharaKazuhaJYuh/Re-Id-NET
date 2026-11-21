@@ -1,8 +1,11 @@
 """Train the independent paper reconstruction; defaults to synthetic CPU smoke."""
 import argparse
+import hashlib
 import json
 import math
+import os
 from pathlib import Path
+import tempfile
 import time
 
 import torch
@@ -63,6 +66,39 @@ def evaluate(model, query, gallery, device, market):
     return {k: evaluate_reid(q[k], qp, qc, g[k], gp, gc) for k in q}
 
 
+def resume_config(args, tr, device):
+    # Save only safe-deserializable data. Market identity is based on the ordered
+    # training filenames, not guessed from the total sample count.
+    opts = ('backend', 'market_root', 'imagenet_checkpoint', 'structure', 'variant',
+            'epochs', 'warmup', 'p', 'k', 'fusion_dim', 'tau', 'margin',
+            'cov_weight', 'consistency_weight', 'seed', 'lr', 'cpu_threads',
+            'progress_every')
+    config = {k: str(v.resolve()) if isinstance(v, Path) else v
+              for k in opts for v in (getattr(args, k),)}
+    config.update(device=str(device), torch=str(torch.__version__))
+    if args.market_root:
+        index = '\n'.join(p.name for p, _, _ in tr.items).encode('utf-8')
+        config['train_index_sha256'] = hashlib.sha256(index).hexdigest()
+    return config
+
+
+def atomic_checkpoint(path, payload):
+    # Replace only after a successful write; a hard stop leaves the prior
+    # checkpoint usable, even if a temporary file is orphaned.
+    tmp = None
+    try:
+        with tempfile.NamedTemporaryFile(dir=path.parent, prefix=f".{path.name}.",
+                                         suffix=".tmp", delete=False) as handle:
+            tmp = Path(handle.name)
+            torch.save(payload, handle)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp, path)
+    finally:
+        if tmp is not None:
+            tmp.unlink(missing_ok=True)
+
+
 def run(args):
     torch.manual_seed(args.seed)
     if args.device == 'cpu':
@@ -84,29 +120,68 @@ def run(args):
         qu, ga = [SyntheticReID(s, 6, 4, size, args.seed+990001) for s in ('query','gallery')]
     p = args.p if args.p is not None else (16 if market else 4)
     sampler = PKBatchSampler(tr.pids, p, args.k, args.seed)
-    training = DataLoader(tr, batch_sampler=sampler)
+    # DataLoader creates a base seed even with zero workers. Keep it out of
+    # the RNG stream used by model stochasticity and training transforms.
+    training = DataLoader(tr, batch_sampler=sampler, generator=torch.Generator().manual_seed(args.seed))
     query, gallery = [None if d is None else DataLoader(d, batch_size=args.eval_batch)
                       for d in (qu, ga)]
     hcen = args.structure != 'backbone'
     aux = args.structure in ('full','hcen-aul')
     sasf = args.structure == 'full'
-    model = ReID(tr.classes, args.backend, args.imagenet_checkpoint, hcen=hcen,
-                 sasf=sasf, aux=aux, fusion_dim=args.fusion_dim).to(device)
+    state_path = args.resume_state or args.resume_from
+    config = resume_config(args, tr, device) if state_path else None
+    progress = dict(steps=0, epoch=0, offset=0, totals={}, epoch_log=[],
+                    window_steps=0, window_loss=0.)
+    state = None
+    if args.resume_from:
+        state = torch.load(args.resume_from, map_location='cpu', weights_only=True)
+        if state.get('version') != 1 or state.get('config') != config:
+            raise ValueError("Resume checkpoint version or training configuration differs.")
+        progress = state['progress']
+        if (not 0 <= progress['epoch'] <= args.epochs
+                or not 0 <= progress['offset'] < sampler.steps
+                or progress['steps'] != progress['epoch'] * sampler.steps + progress['offset']
+                or len(progress['epoch_log']) != progress['epoch']
+                or (progress['epoch'] == args.epochs and progress['offset'])):
+            raise ValueError("Invalid checkpoint training cursor.")
+        if args.max_steps is not None and args.max_steps < progress['steps']:
+            raise ValueError("--max-steps is cumulative and cannot be smaller than the checkpoint step.")
+    model = ReID(tr.classes, args.backend, None if state else args.imagenet_checkpoint,
+                 hcen=hcen, sasf=sasf, aux=aux, fusion_dim=args.fusion_dim).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=.05)
+    if state:
+        model.load_state_dict(state['model'])
+        opt.load_state_dict(state['optimizer'])
+        torch.set_rng_state(state['rng_cpu'])
+        if device.type == 'cuda':
+            torch.cuda.set_rng_state(state['rng_cuda'], device)
+        del state
+
+    def save_state():
+        if not state_path:
+            return
+        atomic_checkpoint(state_path, {
+            'version': 1, 'config': config, 'progress': progress,
+            'model': model.state_dict(), 'optimizer': opt.state_dict(),
+            'rng_cpu': torch.get_rng_state(),
+            'rng_cuda': torch.cuda.get_rng_state(device) if device.type == 'cuda' else None,
+        })
+
     warmup = args.warmup if args.warmup is not None else (20 if market else 0)
-    steps, epoch_log = 0, []
     start = time.perf_counter()
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(device)
-    for epoch in range(args.epochs):
+    for epoch in range(progress['epoch'], args.epochs):
+        if args.max_steps is not None and progress['steps'] >= args.max_steps:
+            break
         multiplier = ((epoch+1)/warmup if epoch < warmup
                       else .5*(1+math.cos(math.pi*(epoch-warmup)/max(1,args.epochs-warmup))))
         for group in opt.param_groups:
             group['lr'] = args.lr*multiplier
         model.train()
-        sampler.set_epoch(epoch)
-        values = []
+        sampler.set_epoch(epoch, progress['offset'])
         for images, ids, _ in training:
+            steps = progress['steps']
             ids = ids.to(device)
             if market:
                 images = market_transform(images, True)
@@ -133,18 +208,48 @@ def run(args):
                     intra, inter = ranking_regularizer(emb_a, emb_b, ids, args.tau)
                     parts.update(signed_intra_diagnostic=intra, signed_inter_diagnostic=inter,
                                  cross_cov_diagnostic=cross_covariance(emb_a, emb_b))
-            values.append({k: float(v.detach()) for k, v in parts.items()})
+            for k, value in parts.items():
+                progress['totals'][k] = progress['totals'].get(k, 0.) + float(value.detach())
             steps += 1
-            if args.max_steps is not None and steps >= args.max_steps:
+            progress['steps'] = steps
+            progress['offset'] += 1
+            if args.progress_every:
+                progress['window_steps'] += 1
+                progress['window_loss'] += float(loss.detach())
+            epoch_end = progress['offset'] == sampler.steps
+            at_limit = args.max_steps is not None and steps >= args.max_steps
+            if epoch_end:
+                progress['epoch_log'].append({
+                    "epoch": epoch+1, "steps": progress['offset'], "lr": args.lr*multiplier,
+                    **{k: v/progress['offset'] for k, v in progress['totals'].items()},
+                })
+                progress.update(epoch=epoch+1, offset=0, totals={})
+            report = None
+            if args.progress_every and steps % args.progress_every == 0:
+                report = {"event": "train_progress", "step": steps, "epoch": epoch+1,
+                          "window_steps": progress['window_steps'],
+                          "mean_loss": progress['window_loss']/progress['window_steps'],
+                          "lr": args.lr*multiplier,
+                          "peak_cuda_allocated_bytes": (torch.cuda.max_memory_allocated(device)
+                                                        if device.type == "cuda" else None)}
+                progress.update(window_steps=0, window_loss=0., latest_report=report)
+            if state_path and (epoch_end or at_limit or steps % args.save_every_steps == 0):
+                save_state()
+            if report is not None:
+                print(json.dumps(report, allow_nan=False), flush=True)
+            if at_limit:
                 break
-        epoch_log.append({"epoch": epoch+1, "steps": len(values), "lr": args.lr*multiplier,
-                          **{k: sum(d[k] for d in values)/len(values) for k in values[0]}})
-        if args.max_steps is not None and steps >= args.max_steps:
-            break
     if device.type == "cuda":
         torch.cuda.synchronize(device)
     seconds = time.perf_counter()-start
-    stats = None if args.skip_eval else evaluate(model, query, gallery, device, market)
+    epoch_log = list(progress['epoch_log'])
+    if progress['offset']:
+        epoch_log.append({"epoch": progress['epoch']+1, "steps": progress['offset'],
+                          "lr": opt.param_groups[0]['lr'], "partial": True,
+                          **{k: v/progress['offset'] for k, v in progress['totals'].items()}})
+    complete = progress['epoch'] == args.epochs
+    stats = (None if args.skip_eval or (state_path and not complete)
+             else evaluate(model, query, gallery, device, market))
     if stats and "combined" in stats:
         stats["fusion_gain_over_best_branch"] = stats["combined"]["mAP"] - max(
             stats["backbone"]["mAP"], stats["fusion"]["mAP"])
@@ -155,7 +260,8 @@ def run(args):
             "structure": args.structure, "variant": args.variant, "seed": args.seed,
             "shape": size, "p": p, "k": args.k, "tau": args.tau, "margin": args.margin,
             "cov_weight": args.cov_weight, "consistency_weight": args.consistency_weight,
-            "steps": steps, "epochs": epoch_log, "training_seconds": seconds,
+            "steps": progress['steps'], "epochs": epoch_log, "training_seconds": seconds,
+            "timing_and_memory_scope": "current_process",
             "imagenet_weights_supplied": args.imagenet_checkpoint is not None,
             "params_including_train_heads": sum(p.numel() for p in model.parameters()),
             "peak_cuda_allocated_bytes": torch.cuda.max_memory_allocated(device) if device.type=="cuda" else None,
@@ -167,7 +273,11 @@ def args_from(argv=None):
     p.add_argument('--backend', choices=['reference','official-tiny'], default='reference')
     p.add_argument('--market-root', type=Path)
     p.add_argument('--imagenet-checkpoint', type=Path)
-    p.add_argument('--checkpoint-out', type=Path)
+    p.add_argument('--checkpoint-out', type=Path, help='Final model export (not resume state).')
+    p.add_argument('--resume-state', type=Path, help='Write atomic optimizer/training state here.')
+    p.add_argument('--resume-from', type=Path, help='Resume a local checkpoint with the same training configuration.')
+    p.add_argument('--save-every-steps', type=int, default=10)
+    p.add_argument('--progress-every', type=int, default=0, help='Emit a flushed JSON summary every N steps; 0 disables.')
     p.add_argument('--device', default='cpu')
     p.add_argument('--structure', choices=['backbone','hcen','hcen-aul','full'], default='full')
     p.add_argument('--variant', choices=['none','ratr','cov','cov_consistency'], default='ratr')
@@ -192,6 +302,15 @@ def args_from(argv=None):
         a.epochs = 160 if a.market_root else 1
     if min(a.epochs, a.k, a.eval_batch, a.cpu_threads) < 1 or (a.max_steps is not None and a.max_steps < 1):
         p.error("Epochs, K, evaluation batch, threads and explicit max steps must be positive.")
+    if a.save_every_steps < 1 or a.progress_every < 0:
+        p.error("Save interval must be positive and progress interval nonnegative.")
+    state_paths = {path.resolve() for path in (a.resume_state, a.resume_from) if path}
+    if any(path and path.resolve() in state_paths
+           for path in (a.out, a.checkpoint_out, a.imagenet_checkpoint)):
+        p.error("Resume state must not share a path with output JSON, final model or pretrained weights.")
+    if (a.resume_state and a.resume_state.exists()
+            and (not a.resume_from or a.resume_state.resolve() != a.resume_from.resolve())):
+        p.error("Refusing to overwrite an existing checkpoint that was not selected with --resume-from.")
     if a.warmup is not None and a.warmup < 0:
         p.error("Warmup must be nonnegative.")
     if a.tau <= 0 or a.lr <= 0 or min(a.margin, a.cov_weight, a.consistency_weight) < 0:

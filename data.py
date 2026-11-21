@@ -91,6 +91,7 @@ class PKBatchSampler(Sampler):
 
     def __init__(self, labels, p, k, seed=0):
         self.p, self.k, self.seed, self.epoch = p, k, seed, 0
+        self.start_batch = 0
         if p < 2 or k < 2:
             raise ValueError("Triplet batches require P >= 2 and K >= 2")
         self.groups = defaultdict(list)
@@ -100,11 +101,14 @@ class PKBatchSampler(Sampler):
             raise ValueError(f"Need at least P={p} distinct identities")
         self.steps = max(1, math.ceil(sum(map(len, self.groups.values())) / (p * k)))
 
-    def set_epoch(self, epoch):
+    def set_epoch(self, epoch, start_batch=0):
+        if not 0 <= start_batch <= self.steps:
+            raise ValueError("Invalid sampler offset")
         self.epoch = int(epoch)
+        self.start_batch = int(start_batch)
 
     def __len__(self):
-        return self.steps
+        return self.steps - self.start_batch
 
     def __iter__(self):
         rng = random.Random(self.seed + self.epoch)
@@ -115,7 +119,7 @@ class PKBatchSampler(Sampler):
         for pid in ids:
             bags[pid] = self.groups[pid].copy()
             rng.shuffle(bags[pid])
-        for _ in range(self.steps):
+        for i in range(self.steps):
             # Prioritize unused observations, and allow refills after a bag is exhausted.
             active = [pid for pid in ids if bags[pid]]
             selected = rng.sample(active, min(self.p, len(active)))
@@ -132,7 +136,8 @@ class PKBatchSampler(Sampler):
                 chosen.extend(rng.sample(pool, unique))
                 chosen.extend(rng.choices(self.groups[pid], k=self.k - len(chosen)))
                 batch.extend(chosen)
-            yield batch
+            if i >= self.start_batch:
+                yield batch
 
 
 def evaluate_reid(query_features, query_pids, query_camids,
