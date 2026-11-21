@@ -1,0 +1,1179 @@
+{
+  "synthetic": true,
+  "seeds": [
+    7,
+    13,
+    21
+  ],
+  "steps": 180,
+  "P": 6,
+  "K": 4,
+  "weights": {
+    "rank": 0.25,
+    "cov": 0.5,
+    "id": 0.25,
+    "triplet": 0.25
+  },
+  "per_seed": {
+    "7": {
+      "none": {
+        "validation": {
+          "branch_a": {
+            "mAP": 0.49112395660378305,
+            "rank1": 0.5416666666666666
+          },
+          "branch_b": {
+            "mAP": 0.5286383926955064,
+            "rank1": 0.5625
+          },
+          "fusion": {
+            "mAP": 0.66413976967629,
+            "rank1": 0.6875
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": -0.013888888888888888,
+              "discordant_fraction": 0.5069444444444444
+            },
+            "negative_centroid": {
+              "tau_a": 0.1606060606060606,
+              "discordant_fraction": 0.4196969696969697
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0009340046483790259,
+          "fusion_minus_best_single_map": 0.13550137698078357
+        },
+        "test": {
+          "branch_a": {
+            "mAP": 0.3753756504591463,
+            "rank1": 0.3541666666666667
+          },
+          "branch_b": {
+            "mAP": 0.3576047048627065,
+            "rank1": 0.3333333333333333
+          },
+          "fusion": {
+            "mAP": 0.46059068459356345,
+            "rank1": 0.375
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.06944444444444445,
+              "discordant_fraction": 0.4652777777777778
+            },
+            "negative_centroid": {
+              "tau_a": 0.19924242424242425,
+              "discordant_fraction": 0.4003787878787879
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0008540103045351329,
+          "fusion_minus_best_single_map": 0.08521503413441717
+        }
+      },
+      "ratr_proxy": {
+        "validation": {
+          "branch_a": {
+            "mAP": 0.4898404039159094,
+            "rank1": 0.5208333333333334
+          },
+          "branch_b": {
+            "mAP": 0.525638202069512,
+            "rank1": 0.5625
+          },
+          "fusion": {
+            "mAP": 0.6621988070316841,
+            "rank1": 0.6875
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": -0.013888888888888888,
+              "discordant_fraction": 0.5069444444444444
+            },
+            "negative_centroid": {
+              "tau_a": 0.15303030303030302,
+              "discordant_fraction": 0.42348484848484846
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0009161127031821573,
+          "fusion_minus_best_single_map": 0.13656060496217215
+        },
+        "test": {
+          "branch_a": {
+            "mAP": 0.37820780039083957,
+            "rank1": 0.3541666666666667
+          },
+          "branch_b": {
+            "mAP": 0.3578497827663278,
+            "rank1": 0.3541666666666667
+          },
+          "fusion": {
+            "mAP": 0.45857098690649284,
+            "rank1": 0.3541666666666667
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": -0.027777777777777776,
+              "discordant_fraction": 0.5138888888888888
+            },
+            "negative_centroid": {
+              "tau_a": 0.19090909090909092,
+              "discordant_fraction": 0.40454545454545454
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0008331999129332567,
+          "fusion_minus_best_single_map": 0.08036318651565327
+        }
+      },
+      "cov": {
+        "validation": {
+          "branch_a": {
+            "mAP": 0.49112395660378305,
+            "rank1": 0.5416666666666666
+          },
+          "branch_b": {
+            "mAP": 0.5285382324390961,
+            "rank1": 0.5625
+          },
+          "fusion": {
+            "mAP": 0.6642186838177041,
+            "rank1": 0.6875
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": -0.013888888888888888,
+              "discordant_fraction": 0.5069444444444444
+            },
+            "negative_centroid": {
+              "tau_a": 0.15984848484848485,
+              "discordant_fraction": 0.4200757575757576
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0009336172236575303,
+          "fusion_minus_best_single_map": 0.13568045137860796
+        },
+        "test": {
+          "branch_a": {
+            "mAP": 0.3761569004591463,
+            "rank1": 0.3541666666666667
+          },
+          "branch_b": {
+            "mAP": 0.3552412084078925,
+            "rank1": 0.3125
+          },
+          "fusion": {
+            "mAP": 0.46059068459356345,
+            "rank1": 0.375
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.06944444444444445,
+              "discordant_fraction": 0.4652777777777778
+            },
+            "negative_centroid": {
+              "tau_a": 0.2,
+              "discordant_fraction": 0.4
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0008540285148049501,
+          "fusion_minus_best_single_map": 0.08443378413441716
+        }
+      },
+      "cov_id": {
+        "validation": {
+          "branch_a": {
+            "mAP": 0.5054778493271384,
+            "rank1": 0.5625
+          },
+          "branch_b": {
+            "mAP": 0.528553710075132,
+            "rank1": 0.5625
+          },
+          "fusion": {
+            "mAP": 0.6594037789855725,
+            "rank1": 0.6875
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": -0.013888888888888888,
+              "discordant_fraction": 0.5069444444444444
+            },
+            "negative_centroid": {
+              "tau_a": 0.1893939393939394,
+              "discordant_fraction": 0.4053030303030303
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.000942699872680403,
+          "fusion_minus_best_single_map": 0.1308500689104405
+        },
+        "test": {
+          "branch_a": {
+            "mAP": 0.3774736364893745,
+            "rank1": 0.3541666666666667
+          },
+          "branch_b": {
+            "mAP": 0.35961146359757734,
+            "rank1": 0.3333333333333333
+          },
+          "fusion": {
+            "mAP": 0.4690070524649519,
+            "rank1": 0.3958333333333333
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.1388888888888889,
+              "discordant_fraction": 0.4305555555555556
+            },
+            "negative_centroid": {
+              "tau_a": 0.22954545454545455,
+              "discordant_fraction": 0.38522727272727275
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0008246546148709286,
+          "fusion_minus_best_single_map": 0.0915334159755774
+        }
+      }
+    },
+    "13": {
+      "none": {
+        "validation": {
+          "branch_a": {
+            "mAP": 0.5610755425508468,
+            "rank1": 0.5833333333333334
+          },
+          "branch_b": {
+            "mAP": 0.5955834551193292,
+            "rank1": 0.6666666666666666
+          },
+          "fusion": {
+            "mAP": 0.6871317218507406,
+            "rank1": 0.7083333333333334
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.1527777777777778,
+              "discordant_fraction": 0.4236111111111111
+            },
+            "negative_centroid": {
+              "tau_a": 0.11136363636363636,
+              "discordant_fraction": 0.44431818181818183
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.000787834782941414,
+          "fusion_minus_best_single_map": 0.09154826673141137
+        },
+        "test": {
+          "branch_a": {
+            "mAP": 0.4389542357854291,
+            "rank1": 0.3958333333333333
+          },
+          "branch_b": {
+            "mAP": 0.5611914125133258,
+            "rank1": 0.6041666666666666
+          },
+          "fusion": {
+            "mAP": 0.6864722627670687,
+            "rank1": 0.6666666666666666
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.09722222222222222,
+              "discordant_fraction": 0.4513888888888889
+            },
+            "negative_centroid": {
+              "tau_a": 0.07651515151515151,
+              "discordant_fraction": 0.46174242424242423
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0007862516633349923,
+          "fusion_minus_best_single_map": 0.12528085025374291
+        }
+      },
+      "ratr_proxy": {
+        "validation": {
+          "branch_a": {
+            "mAP": 0.5600072953970332,
+            "rank1": 0.5833333333333334
+          },
+          "branch_b": {
+            "mAP": 0.5919730132809486,
+            "rank1": 0.625
+          },
+          "fusion": {
+            "mAP": 0.6899763389717085,
+            "rank1": 0.7083333333333334
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.125,
+              "discordant_fraction": 0.4375
+            },
+            "negative_centroid": {
+              "tau_a": 0.10303030303030303,
+              "discordant_fraction": 0.4484848484848485
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0007509124525129621,
+          "fusion_minus_best_single_map": 0.09800332569075987
+        },
+        "test": {
+          "branch_a": {
+            "mAP": 0.4454692801460675,
+            "rank1": 0.3958333333333333
+          },
+          "branch_b": {
+            "mAP": 0.5644287969452056,
+            "rank1": 0.6041666666666666
+          },
+          "fusion": {
+            "mAP": 0.693307336161212,
+            "rank1": 0.6666666666666666
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.1111111111111111,
+              "discordant_fraction": 0.4444444444444444
+            },
+            "negative_centroid": {
+              "tau_a": 0.06515151515151515,
+              "discordant_fraction": 0.4674242424242424
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0007821417453112909,
+          "fusion_minus_best_single_map": 0.12887853921600634
+        }
+      },
+      "cov": {
+        "validation": {
+          "branch_a": {
+            "mAP": 0.5610755425508468,
+            "rank1": 0.5833333333333334
+          },
+          "branch_b": {
+            "mAP": 0.5955338519447261,
+            "rank1": 0.6666666666666666
+          },
+          "fusion": {
+            "mAP": 0.687747252153771,
+            "rank1": 0.7083333333333334
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.1527777777777778,
+              "discordant_fraction": 0.4236111111111111
+            },
+            "negative_centroid": {
+              "tau_a": 0.10984848484848485,
+              "discordant_fraction": 0.44507575757575757
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0007870145942055717,
+          "fusion_minus_best_single_map": 0.0922134002090449
+        },
+        "test": {
+          "branch_a": {
+            "mAP": 0.43901744911900814,
+            "rank1": 0.3958333333333333
+          },
+          "branch_b": {
+            "mAP": 0.5611666109260242,
+            "rank1": 0.6041666666666666
+          },
+          "fusion": {
+            "mAP": 0.6860506357829417,
+            "rank1": 0.6666666666666666
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.09722222222222222,
+              "discordant_fraction": 0.4513888888888889
+            },
+            "negative_centroid": {
+              "tau_a": 0.07651515151515151,
+              "discordant_fraction": 0.46174242424242423
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0007862119883786152,
+          "fusion_minus_best_single_map": 0.12488402485691752
+        }
+      },
+      "cov_id": {
+        "validation": {
+          "branch_a": {
+            "mAP": 0.5551054656534092,
+            "rank1": 0.5625
+          },
+          "branch_b": {
+            "mAP": 0.6091584471823671,
+            "rank1": 0.6666666666666666
+          },
+          "fusion": {
+            "mAP": 0.6975458814872287,
+            "rank1": 0.7291666666666666
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.09722222222222222,
+              "discordant_fraction": 0.4513888888888889
+            },
+            "negative_centroid": {
+              "tau_a": 0.19090909090909092,
+              "discordant_fraction": 0.40454545454545454
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0009767294792195204,
+          "fusion_minus_best_single_map": 0.08838743430486162
+        },
+        "test": {
+          "branch_a": {
+            "mAP": 0.4296031654316776,
+            "rank1": 0.3125
+          },
+          "branch_b": {
+            "mAP": 0.5554146049424312,
+            "rank1": 0.6041666666666666
+          },
+          "fusion": {
+            "mAP": 0.6719399204148105,
+            "rank1": 0.6875
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.125,
+              "discordant_fraction": 0.4375
+            },
+            "negative_centroid": {
+              "tau_a": 0.0803030303030303,
+              "discordant_fraction": 0.45984848484848484
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0008293511593196869,
+          "fusion_minus_best_single_map": 0.11652531547237932
+        }
+      }
+    },
+    "21": {
+      "none": {
+        "validation": {
+          "branch_a": {
+            "mAP": 0.4047654791123713,
+            "rank1": 0.3958333333333333
+          },
+          "branch_b": {
+            "mAP": 0.4644285662850422,
+            "rank1": 0.5
+          },
+          "fusion": {
+            "mAP": 0.5938194821681343,
+            "rank1": 0.6458333333333334
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.013888888888888888,
+              "discordant_fraction": 0.4930555555555556
+            },
+            "negative_centroid": {
+              "tau_a": 0.12651515151515152,
+              "discordant_fraction": 0.43674242424242427
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0005998701354125642,
+          "fusion_minus_best_single_map": 0.1293909158830921
+        },
+        "test": {
+          "branch_a": {
+            "mAP": 0.40768975573932237,
+            "rank1": 0.4791666666666667
+          },
+          "branch_b": {
+            "mAP": 0.42963220248322215,
+            "rank1": 0.4375
+          },
+          "fusion": {
+            "mAP": 0.5667288711609707,
+            "rank1": 0.625
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.041666666666666664,
+              "discordant_fraction": 0.4791666666666667
+            },
+            "negative_centroid": {
+              "tau_a": -0.045454545454545456,
+              "discordant_fraction": 0.5227272727272727
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.00032869955985188946,
+          "fusion_minus_best_single_map": 0.13709666867774856
+        }
+      },
+      "ratr_proxy": {
+        "validation": {
+          "branch_a": {
+            "mAP": 0.40253072408348683,
+            "rank1": 0.375
+          },
+          "branch_b": {
+            "mAP": 0.46569295823308005,
+            "rank1": 0.5
+          },
+          "fusion": {
+            "mAP": 0.5947715448667609,
+            "rank1": 0.6666666666666666
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.027777777777777776,
+              "discordant_fraction": 0.4861111111111111
+            },
+            "negative_centroid": {
+              "tau_a": 0.10909090909090909,
+              "discordant_fraction": 0.44545454545454544
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0005820290460839107,
+          "fusion_minus_best_single_map": 0.12907858663368083
+        },
+        "test": {
+          "branch_a": {
+            "mAP": 0.40689574101351234,
+            "rank1": 0.4583333333333333
+          },
+          "branch_b": {
+            "mAP": 0.43389382179305497,
+            "rank1": 0.4583333333333333
+          },
+          "fusion": {
+            "mAP": 0.57482967673208,
+            "rank1": 0.6458333333333334
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.041666666666666664,
+              "discordant_fraction": 0.4791666666666667
+            },
+            "negative_centroid": {
+              "tau_a": -0.05,
+              "discordant_fraction": 0.525
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0003334569584641328,
+          "fusion_minus_best_single_map": 0.140935854939025
+        }
+      },
+      "cov": {
+        "validation": {
+          "branch_a": {
+            "mAP": 0.4042178105499969,
+            "rank1": 0.3958333333333333
+          },
+          "branch_b": {
+            "mAP": 0.4643988891720317,
+            "rank1": 0.5
+          },
+          "fusion": {
+            "mAP": 0.5925173988348009,
+            "rank1": 0.6458333333333334
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.013888888888888888,
+              "discordant_fraction": 0.4930555555555556
+            },
+            "negative_centroid": {
+              "tau_a": 0.125,
+              "discordant_fraction": 0.4375
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0005999454521188289,
+          "fusion_minus_best_single_map": 0.12811850966276922
+        },
+        "test": {
+          "branch_a": {
+            "mAP": 0.40724370873077537,
+            "rank1": 0.4791666666666667
+          },
+          "branch_b": {
+            "mAP": 0.42923744388533863,
+            "rank1": 0.4375
+          },
+          "fusion": {
+            "mAP": 0.5673785754871455,
+            "rank1": 0.625
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.041666666666666664,
+              "discordant_fraction": 0.4791666666666667
+            },
+            "negative_centroid": {
+              "tau_a": -0.045454545454545456,
+              "discordant_fraction": 0.5227272727272727
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.00032873458776545763,
+          "fusion_minus_best_single_map": 0.1381411316018069
+        }
+      },
+      "cov_id": {
+        "validation": {
+          "branch_a": {
+            "mAP": 0.41651882886292363,
+            "rank1": 0.4583333333333333
+          },
+          "branch_b": {
+            "mAP": 0.4615201304433014,
+            "rank1": 0.4375
+          },
+          "fusion": {
+            "mAP": 0.5952378079514982,
+            "rank1": 0.6875
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": 0.041666666666666664,
+              "discordant_fraction": 0.4791666666666667
+            },
+            "negative_centroid": {
+              "tau_a": 0.15681818181818183,
+              "discordant_fraction": 0.42159090909090907
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0006374463507374422,
+          "fusion_minus_best_single_map": 0.13371767750819674
+        },
+        "test": {
+          "branch_a": {
+            "mAP": 0.39907523218158464,
+            "rank1": 0.4791666666666667
+          },
+          "branch_b": {
+            "mAP": 0.44264680656688915,
+            "rank1": 0.4791666666666667
+          },
+          "fusion": {
+            "mAP": 0.5590154098345493,
+            "rank1": 0.625
+          },
+          "within_gallery_ranking_diagnostic": {
+            "positive": {
+              "tau_a": -0.027777777777777776,
+              "discordant_fraction": 0.5138888888888888
+            },
+            "negative_centroid": {
+              "tau_a": -0.048484848484848485,
+              "discordant_fraction": 0.5242424242424243
+            }
+          },
+          "within_gallery_cross_covariance_mse": 0.0003321037595989236,
+          "fusion_minus_best_single_map": 0.11636860326766019
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "none": {
+      "validation": {
+        "branch_a": {
+          "mAP": {
+            "mean": 0.4856549927556671,
+            "sd": 0.0782984109494826
+          },
+          "rank1": {
+            "mean": 0.5069444444444444,
+            "sd": 0.09845449221359603
+          }
+        },
+        "branch_b": {
+          "mAP": {
+            "mean": 0.5295501380332926,
+            "sd": 0.06558219785852161
+          },
+          "rank1": {
+            "mean": 0.5763888888888888,
+            "sd": 0.08419691425682041
+          }
+        },
+        "fusion": {
+          "mAP": {
+            "mean": 0.6483636578983883,
+            "sd": 0.048615406979348394
+          },
+          "rank1": {
+            "mean": 0.6805555555555557,
+            "sd": 0.03182344232608222
+          }
+        },
+        "within_gallery_ranking_diagnostic": {
+          "positive": {
+            "tau_a": {
+              "mean": 0.05092592592592593,
+              "sd": 0.08929306260178663
+            },
+            "discordant_fraction": {
+              "mean": 0.47453703703703703,
+              "sd": 0.04464653130089331
+            }
+          },
+          "negative_centroid": {
+            "tau_a": {
+              "mean": 0.13282828282828282,
+              "sd": 0.025220939842724978
+            },
+            "discordant_fraction": {
+              "mean": 0.4335858585858586,
+              "sd": 0.012610469921362506
+            }
+          }
+        },
+        "within_gallery_cross_covariance_mse": {
+          "mean": 0.0007739031889110014,
+          "sd": 0.0001675023437836164
+        },
+        "fusion_minus_best_single_map": {
+          "mean": 0.11881351986509568,
+          "sd": 0.02380924095891156
+        }
+      },
+      "test": {
+        "branch_a": {
+          "mAP": {
+            "mean": 0.4073398806612993,
+            "sd": 0.03179073666102315
+          },
+          "rank1": {
+            "mean": 0.40972222222222227,
+            "sd": 0.06364688465216445
+          }
+        },
+        "branch_b": {
+          "mAP": {
+            "mean": 0.4494761066197515,
+            "sd": 0.10323382334070316
+          },
+          "rank1": {
+            "mean": 0.4583333333333333,
+            "sd": 0.136613302589625
+          }
+        },
+        "fusion": {
+          "mAP": {
+            "mean": 0.571263939507201,
+            "sd": 0.11300905704065087
+          },
+          "rank1": {
+            "mean": 0.5555555555555555,
+            "sd": 0.1577474540500076
+          }
+        },
+        "within_gallery_ranking_diagnostic": {
+          "positive": {
+            "tau_a": {
+              "mean": 0.06944444444444445,
+              "sd": 0.02777777777777778
+            },
+            "discordant_fraction": {
+              "mean": 0.46527777777777785,
+              "sd": 0.013888888888888895
+            }
+          },
+          "negative_centroid": {
+            "tau_a": {
+              "mean": 0.07676767676767676,
+              "sd": 0.12234868030131056
+            },
+            "discordant_fraction": {
+              "mean": 0.4616161616161616,
+              "sd": 0.06117434015065527
+            }
+          }
+        },
+        "within_gallery_cross_covariance_mse": {
+          "mean": 0.0006563205092406715,
+          "sd": 0.00028574363199050917
+        },
+        "fusion_minus_best_single_map": {
+          "mean": 0.11586418435530288,
+          "sd": 0.027192484222742168
+        }
+      }
+    },
+    "ratr_proxy": {
+      "validation": {
+        "branch_a": {
+          "mAP": {
+            "mean": 0.48412614113214314,
+            "sd": 0.07889364503899579
+          },
+          "rank1": {
+            "mean": 0.4930555555555556,
+            "sd": 0.1069083633218101
+          }
+        },
+        "branch_b": {
+          "mAP": {
+            "mean": 0.5277680578611802,
+            "sd": 0.06316696359643352
+          },
+          "rank1": {
+            "mean": 0.5625,
+            "sd": 0.0625
+          }
+        },
+        "fusion": {
+          "mAP": {
+            "mean": 0.6489822302900512,
+            "sd": 0.04895913225044918
+          },
+          "rank1": {
+            "mean": 0.6875,
+            "sd": 0.02083333333333337
+          }
+        },
+        "within_gallery_ranking_diagnostic": {
+          "positive": {
+            "tau_a": {
+              "mean": 0.0462962962962963,
+              "sd": 0.07127224221454005
+            },
+            "discordant_fraction": {
+              "mean": 0.47685185185185186,
+              "sd": 0.03563612110727002
+            }
+          },
+          "negative_centroid": {
+            "tau_a": {
+              "mean": 0.12171717171717171,
+              "sd": 0.02728675284694969
+            },
+            "discordant_fraction": {
+              "mean": 0.4391414141414141,
+              "sd": 0.013643376423474855
+            }
+          }
+        },
+        "within_gallery_cross_covariance_mse": {
+          "mean": 0.0007496847339263434,
+          "sd": 0.00016704521230711955
+        },
+        "fusion_minus_best_single_map": {
+          "mean": 0.12121417242887095,
+          "sd": 0.020446337185227856
+        }
+      },
+      "test": {
+        "branch_a": {
+          "mAP": {
+            "mean": 0.4101909405168065,
+            "sd": 0.0337515987701415
+          },
+          "rank1": {
+            "mean": 0.40277777777777773,
+            "sd": 0.052429405800491304
+          }
+        },
+        "branch_b": {
+          "mAP": {
+            "mean": 0.4520574671681961,
+            "sd": 0.10448043254487736
+          },
+          "rank1": {
+            "mean": 0.47222222222222215,
+            "sd": 0.12557737027795224
+          }
+        },
+        "fusion": {
+          "mAP": {
+            "mean": 0.5755693332665949,
+            "sd": 0.11736992261307903
+          },
+          "rank1": {
+            "mean": 0.5555555555555555,
+            "sd": 0.17471868924179337
+          }
+        },
+        "within_gallery_ranking_diagnostic": {
+          "positive": {
+            "tau_a": {
+              "mean": 0.041666666666666664,
+              "sd": 0.06944444444444445
+            },
+            "discordant_fraction": {
+              "mean": 0.4791666666666667,
+              "sd": 0.03472222222222221
+            }
+          },
+          "negative_centroid": {
+            "tau_a": {
+              "mean": 0.0686868686868687,
+              "sd": 0.12049345029554973
+            },
+            "discordant_fraction": {
+              "mean": 0.46565656565656566,
+              "sd": 0.06024672514777487
+            }
+          }
+        },
+        "within_gallery_cross_covariance_mse": {
+          "mean": 0.0006495995389028935,
+          "sd": 0.0002749751488681966
+        },
+        "fusion_minus_best_single_map": {
+          "mean": 0.11672586022356153,
+          "sd": 0.03206287175226184
+        }
+      }
+    },
+    "cov": {
+      "validation": {
+        "branch_a": {
+          "mAP": {
+            "mean": 0.485472436568209,
+            "sd": 0.07858143407413093
+          },
+          "rank1": {
+            "mean": 0.5069444444444444,
+            "sd": 0.09845449221359603
+          }
+        },
+        "branch_b": {
+          "mAP": {
+            "mean": 0.5294903245186179,
+            "sd": 0.06557266560728564
+          },
+          "rank1": {
+            "mean": 0.5763888888888888,
+            "sd": 0.08419691425682041
+          }
+        },
+        "fusion": {
+          "mAP": {
+            "mean": 0.648161111602092,
+            "sd": 0.04960408712881264
+          },
+          "rank1": {
+            "mean": 0.6805555555555557,
+            "sd": 0.03182344232608222
+          }
+        },
+        "within_gallery_ranking_diagnostic": {
+          "positive": {
+            "tau_a": {
+              "mean": 0.05092592592592593,
+              "sd": 0.08929306260178663
+            },
+            "discordant_fraction": {
+              "mean": 0.47453703703703703,
+              "sd": 0.04464653130089331
+            }
+          },
+          "negative_centroid": {
+            "tau_a": {
+              "mean": 0.13156565656565658,
+              "sd": 0.025638464942418296
+            },
+            "discordant_fraction": {
+              "mean": 0.4342171717171717,
+              "sd": 0.012819232471209129
+            }
+          }
+        },
+        "within_gallery_cross_covariance_mse": {
+          "mean": 0.0007735257566606436,
+          "sd": 0.00016724435516387074
+        },
+        "fusion_minus_best_single_map": {
+          "mean": 0.11867078708347402,
+          "sd": 0.023222634019332233
+        }
+      },
+      "test": {
+        "branch_a": {
+          "mAP": {
+            "mean": 0.40747268610297666,
+            "sd": 0.03143089988263858
+          },
+          "rank1": {
+            "mean": 0.40972222222222227,
+            "sd": 0.06364688465216445
+          }
+        },
+        "branch_b": {
+          "mAP": {
+            "mean": 0.44854842107308507,
+            "sd": 0.10431204738918169
+          },
+          "rank1": {
+            "mean": 0.45138888888888884,
+            "sd": 0.1463285243451769
+          }
+        },
+        "fusion": {
+          "mAP": {
+            "mean": 0.5713399652878836,
+            "sd": 0.1127821654981152
+          },
+          "rank1": {
+            "mean": 0.5555555555555555,
+            "sd": 0.1577474540500076
+          }
+        },
+        "within_gallery_ranking_diagnostic": {
+          "positive": {
+            "tau_a": {
+              "mean": 0.06944444444444445,
+              "sd": 0.02777777777777778
+            },
+            "discordant_fraction": {
+              "mean": 0.46527777777777785,
+              "sd": 0.013888888888888895
+            }
+          },
+          "negative_centroid": {
+            "tau_a": {
+              "mean": 0.077020202020202,
+              "sd": 0.12272805212372545
+            },
+            "discordant_fraction": {
+              "mean": 0.461489898989899,
+              "sd": 0.0613640260618627
+            }
+          }
+        },
+        "within_gallery_cross_covariance_mse": {
+          "mean": 0.000656325030316341,
+          "sd": 0.00028572083202340384
+        },
+        "fusion_minus_best_single_map": {
+          "mean": 0.11581964686438052,
+          "sd": 0.027977526772204612
+        }
+      }
+    },
+    "cov_id": {
+      "validation": {
+        "branch_a": {
+          "mAP": {
+            "mean": 0.4923673812811571,
+            "sd": 0.07021735720968866
+          },
+          "rank1": {
+            "mean": 0.5277777777777778,
+            "sd": 0.06014065304058603
+          }
+        },
+        "branch_b": {
+          "mAP": {
+            "mean": 0.5330774292336001,
+            "sd": 0.07392304220373165
+          },
+          "rank1": {
+            "mean": 0.5555555555555555,
+            "sd": 0.11474105306846044
+          }
+        },
+        "fusion": {
+          "mAP": {
+            "mean": 0.6507291561414331,
+            "sd": 0.05170272999333944
+          },
+          "rank1": {
+            "mean": 0.7013888888888888,
+            "sd": 0.024056261216234387
+          }
+        },
+        "within_gallery_ranking_diagnostic": {
+          "positive": {
+            "tau_a": {
+              "mean": 0.041666666666666664,
+              "sd": 0.05555555555555555
+            },
+            "discordant_fraction": {
+              "mean": 0.4791666666666667,
+              "sd": 0.027777777777777762
+            }
+          },
+          "negative_centroid": {
+            "tau_a": {
+              "mean": 0.17904040404040403,
+              "sd": 0.019259914106735696
+            },
+            "discordant_fraction": {
+              "mean": 0.410479797979798,
+              "sd": 0.009629957053367848
+            }
+          }
+        },
+        "within_gallery_cross_covariance_mse": {
+          "mean": 0.0008522919008791219,
+          "sd": 0.00018683806181306453
+        },
+        "fusion_minus_best_single_map": {
+          "mean": 0.11765172690783295,
+          "sd": 0.025384146842699344
+        }
+      },
+      "test": {
+        "branch_a": {
+          "mAP": {
+            "mean": 0.4020506780342123,
+            "sd": 0.026191828982586218
+          },
+          "rank1": {
+            "mean": 0.3819444444444445,
+            "sd": 0.08673608331108887
+          }
+        },
+        "branch_b": {
+          "mAP": {
+            "mean": 0.4525576250356325,
+            "sd": 0.09827708676069156
+          },
+          "rank1": {
+            "mean": 0.47222222222222227,
+            "sd": 0.13555014788849398
+          }
+        },
+        "fusion": {
+          "mAP": {
+            "mean": 0.5666541275714373,
+            "sd": 0.10168185546146656
+          },
+          "rank1": {
+            "mean": 0.5694444444444444,
+            "sd": 0.15356489157983322
+          }
+        },
+        "within_gallery_ranking_diagnostic": {
+          "positive": {
+            "tau_a": {
+              "mean": 0.0787037037037037,
+              "sd": 0.09247677942332491
+            },
+            "discordant_fraction": {
+              "mean": 0.46064814814814814,
+              "sd": 0.046238389711662414
+            }
+          },
+          "negative_centroid": {
+            "tau_a": {
+              "mean": 0.08712121212121214,
+              "sd": 0.13914049753130778
+            },
+            "discordant_fraction": {
+              "mean": 0.456439393939394,
+              "sd": 0.06957024876565392
+            }
+          }
+        },
+        "within_gallery_cross_covariance_mse": {
+          "mean": 0.0006620365112631796,
+          "sd": 0.0002857397939524709
+        },
+        "fusion_minus_best_single_map": {
+          "mean": 0.10814244490520564,
+          "sd": 0.014384054406449444
+        }
+      }
+    }
+  }
+}

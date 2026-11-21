@@ -41,3 +41,7 @@ python train.py --backend official-tiny --device cuda --market-root /your/local/
 若显存不足，优先同步降低所有对照的 P，不改变 K=4；记录配置和实测时间。随后在训练身份内独立选定未披露参数，不用官方测试集调参；当前包 **未实现该验证集切分**。锁定设置后训完整原文基线和骨干对照、在官方 query/gallery 运行一次，记录 mAP 和 Rank-1。CLI 使用 `--structure backbone --variant none` 启动骨干对照；完整组默认 `--structure full --variant ratr`。日后用 `--variant none|ratr|cov|cov_consistency` 在同样的完整结构和三个种子上跑路线 C；`cov_consistency` 是交叉协方差正则加身份概率 JS 一致性，不是原论文损失。Duke/MSMT 不在本实现的数据入口里。
 
 如需作者级别复现，最值得补的不是新 GitHub 仓库，而是作者代码/最终权重、RATR 温度与隐藏实现、末层权重迁移说明。正式模型没有跑出论文指标以前，不把 CPU 合成测试当成复现成功。
+
+## 早期诊断
+
+`diagnostics/numpy-route-c/` 保留第一版 NumPy 合成诊断与结果，仅供比较；正式实现以仓库根目录的 PyTorch 版本为准。

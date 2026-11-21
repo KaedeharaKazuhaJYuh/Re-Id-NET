@@ -1,0 +1,413 @@
+[
+  {
+    "dataset": "synthetic-smoke-only",
+    "backend": "reference",
+    "torch": "2.6.0+cpu",
+    "device": "cpu",
+    "structure": "backbone",
+    "variant": "none",
+    "seed": 7,
+    "shape": [
+      64,
+      32
+    ],
+    "p": 4,
+    "k": 4,
+    "tau": 0.1,
+    "margin": 0.3,
+    "cov_weight": 0.1,
+    "consistency_weight": 0.1,
+    "steps": 2,
+    "epochs": [
+      {
+        "epoch": 1,
+        "steps": 2,
+        "lr": 0.00035,
+        "loss": 2.464125156402588
+      }
+    ],
+    "training_seconds": 0.048067122000247764,
+    "imagenet_weights_supplied": false,
+    "params_including_train_heads": 105592,
+    "peak_cuda_allocated_bytes": null,
+    "evaluation": {
+      "backbone": {
+        "mAP": 0.9538690447807312,
+        "rank1": 1.0,
+        "valid_queries": 6
+      }
+    }
+  },
+  {
+    "dataset": "synthetic-smoke-only",
+    "backend": "reference",
+    "torch": "2.6.0+cpu",
+    "device": "cpu",
+    "structure": "hcen",
+    "variant": "none",
+    "seed": 7,
+    "shape": [
+      64,
+      32
+    ],
+    "p": 4,
+    "k": 4,
+    "tau": 0.1,
+    "margin": 0.3,
+    "cov_weight": 0.1,
+    "consistency_weight": 0.1,
+    "steps": 2,
+    "epochs": [
+      {
+        "epoch": 1,
+        "steps": 2,
+        "lr": 0.00035,
+        "loss": 5.138140916824341,
+        "base": 5.138140916824341,
+        "id": 4.73537540435791,
+        "triplet": 0.40276551991701126,
+        "aux": 0.0,
+        "ratr": 0.0,
+        "ratr_intra": 0.0,
+        "ratr_inter": 0.0,
+        "cov": 0.0,
+        "consistency": 0.0,
+        "signed_intra_diagnostic": 0.10665526613593102,
+        "signed_inter_diagnostic": 0.17855969071388245,
+        "cross_cov_diagnostic": 0.18032898008823395
+      }
+    ],
+    "training_seconds": 0.09421746299994993,
+    "imagenet_weights_supplied": false,
+    "params_including_train_heads": 128184,
+    "peak_cuda_allocated_bytes": null,
+    "evaluation": {
+      "backbone": {
+        "mAP": 0.9642857114473978,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "fusion": {
+        "mAP": 0.9777777791023254,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "combined": {
+        "mAP": 0.9642857114473978,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "fusion_gain_over_best_branch": -0.013492067654927609
+    }
+  },
+  {
+    "dataset": "synthetic-smoke-only",
+    "backend": "reference",
+    "torch": "2.6.0+cpu",
+    "device": "cpu",
+    "structure": "hcen-aul",
+    "variant": "none",
+    "seed": 7,
+    "shape": [
+      64,
+      32
+    ],
+    "p": 4,
+    "k": 4,
+    "tau": 0.1,
+    "margin": 0.3,
+    "cov_weight": 0.1,
+    "consistency_weight": 0.1,
+    "steps": 2,
+    "epochs": [
+      {
+        "epoch": 1,
+        "steps": 2,
+        "lr": 0.00035,
+        "loss": 6.523113250732422,
+        "base": 6.523113250732422,
+        "id": 4.7257981300354,
+        "triplet": 0.40775103121995926,
+        "aux": 4.631879568099976,
+        "ratr": 0.0,
+        "ratr_intra": 0.0,
+        "ratr_inter": 0.0,
+        "cov": 0.0,
+        "consistency": 0.0,
+        "signed_intra_diagnostic": 0.10707554593682289,
+        "signed_inter_diagnostic": 0.18000078946352005,
+        "cross_cov_diagnostic": 0.1802118569612503
+      }
+    ],
+    "training_seconds": 0.08413863299983859,
+    "imagenet_weights_supplied": false,
+    "params_including_train_heads": 128504,
+    "peak_cuda_allocated_bytes": null,
+    "evaluation": {
+      "backbone": {
+        "mAP": 0.9642857114473978,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "fusion": {
+        "mAP": 0.9861111144224802,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "combined": {
+        "mAP": 0.9642857114473978,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "fusion_gain_over_best_branch": -0.021825402975082397
+    }
+  },
+  {
+    "dataset": "synthetic-smoke-only",
+    "backend": "reference",
+    "torch": "2.6.0+cpu",
+    "device": "cpu",
+    "structure": "full",
+    "variant": "none",
+    "seed": 7,
+    "shape": [
+      64,
+      32
+    ],
+    "p": 4,
+    "k": 4,
+    "tau": 0.1,
+    "margin": 0.3,
+    "cov_weight": 0.1,
+    "consistency_weight": 0.1,
+    "steps": 2,
+    "epochs": [
+      {
+        "epoch": 1,
+        "steps": 2,
+        "lr": 0.00035,
+        "loss": 6.265544891357422,
+        "base": 6.265544891357422,
+        "id": 4.495759963989258,
+        "triplet": 0.3675477206707001,
+        "aux": 4.674124002456665,
+        "ratr": 0.0,
+        "ratr_intra": 0.0,
+        "ratr_inter": 0.0,
+        "cov": 0.0,
+        "consistency": 0.0,
+        "signed_intra_diagnostic": 0.15667307376861572,
+        "signed_inter_diagnostic": 0.15591796301305294,
+        "cross_cov_diagnostic": 0.21643507480621338
+      }
+    ],
+    "training_seconds": 0.1286907000003339,
+    "imagenet_weights_supplied": false,
+    "params_including_train_heads": 131678,
+    "peak_cuda_allocated_bytes": null,
+    "evaluation": {
+      "backbone": {
+        "mAP": 0.9538690447807312,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "fusion": {
+        "mAP": 0.9421296318372091,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "combined": {
+        "mAP": 0.9444444477558136,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "fusion_gain_over_best_branch": -0.009424597024917603
+    }
+  },
+  {
+    "dataset": "synthetic-smoke-only",
+    "backend": "reference",
+    "torch": "2.6.0+cpu",
+    "device": "cpu",
+    "structure": "full",
+    "variant": "ratr",
+    "seed": 7,
+    "shape": [
+      64,
+      32
+    ],
+    "p": 4,
+    "k": 4,
+    "tau": 0.1,
+    "margin": 0.3,
+    "cov_weight": 0.1,
+    "consistency_weight": 0.1,
+    "steps": 2,
+    "epochs": [
+      {
+        "epoch": 1,
+        "steps": 2,
+        "lr": 0.00035,
+        "loss": 6.562873363494873,
+        "base": 6.265895843505859,
+        "id": 4.502289772033691,
+        "triplet": 0.35591942071914673,
+        "aux": 4.692288875579834,
+        "ratr": 0.2969774305820465,
+        "ratr_intra": 0.1459289789199829,
+        "ratr_inter": 0.15104844234883785,
+        "cov": 0.0,
+        "consistency": 0.0,
+        "signed_intra_diagnostic": 0.1459289789199829,
+        "signed_inter_diagnostic": 0.15104844234883785,
+        "cross_cov_diagnostic": 0.20719582587480545
+      }
+    ],
+    "training_seconds": 0.10309999099990819,
+    "imagenet_weights_supplied": false,
+    "params_including_train_heads": 131678,
+    "peak_cuda_allocated_bytes": null,
+    "evaluation": {
+      "backbone": {
+        "mAP": 0.9642857114473978,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "fusion": {
+        "mAP": 0.9708333313465118,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "combined": {
+        "mAP": 0.9682539701461792,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "fusion_gain_over_best_branch": -0.0025793612003326416
+    }
+  },
+  {
+    "dataset": "synthetic-smoke-only",
+    "backend": "reference",
+    "torch": "2.6.0+cpu",
+    "device": "cpu",
+    "structure": "full",
+    "variant": "cov",
+    "seed": 7,
+    "shape": [
+      64,
+      32
+    ],
+    "p": 4,
+    "k": 4,
+    "tau": 0.1,
+    "margin": 0.3,
+    "cov_weight": 0.1,
+    "consistency_weight": 0.1,
+    "steps": 2,
+    "epochs": [
+      {
+        "epoch": 1,
+        "steps": 2,
+        "lr": 0.00035,
+        "loss": 6.288395643234253,
+        "base": 6.266756534576416,
+        "id": 4.496888637542725,
+        "triplet": 0.3673594295978546,
+        "aux": 4.675028085708618,
+        "ratr": 0.0,
+        "ratr_intra": 0.0,
+        "ratr_inter": 0.0,
+        "cov": 0.21638954430818558,
+        "consistency": 0.0,
+        "signed_intra_diagnostic": 0.15655402839183807,
+        "signed_inter_diagnostic": 0.15660702250897884,
+        "cross_cov_diagnostic": 0.21638954430818558
+      }
+    ],
+    "training_seconds": 0.22402560799991988,
+    "imagenet_weights_supplied": false,
+    "params_including_train_heads": 131678,
+    "peak_cuda_allocated_bytes": null,
+    "evaluation": {
+      "backbone": {
+        "mAP": 0.9538690447807312,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "fusion": {
+        "mAP": 0.9444444477558136,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "combined": {
+        "mAP": 0.9486111104488373,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "fusion_gain_over_best_branch": -0.005257934331893921
+    }
+  },
+  {
+    "dataset": "synthetic-smoke-only",
+    "backend": "reference",
+    "torch": "2.6.0+cpu",
+    "device": "cpu",
+    "structure": "full",
+    "variant": "cov_consistency",
+    "seed": 7,
+    "shape": [
+      64,
+      32
+    ],
+    "p": 4,
+    "k": 4,
+    "tau": 0.1,
+    "margin": 0.3,
+    "cov_weight": 0.1,
+    "consistency_weight": 0.1,
+    "steps": 2,
+    "epochs": [
+      {
+        "epoch": 1,
+        "steps": 2,
+        "lr": 0.00035,
+        "loss": 6.295557498931885,
+        "base": 6.266707897186279,
+        "id": 4.49666690826416,
+        "triplet": 0.3674963712692261,
+        "aux": 4.675148010253906,
+        "ratr": 0.0,
+        "ratr_intra": 0.0,
+        "ratr_inter": 0.0,
+        "cov": 0.2164163589477539,
+        "consistency": 0.07207750156521797,
+        "signed_intra_diagnostic": 0.15659602731466293,
+        "signed_inter_diagnostic": 0.15629380010068417,
+        "cross_cov_diagnostic": 0.2164163589477539
+      }
+    ],
+    "training_seconds": 0.12299768499997299,
+    "imagenet_weights_supplied": false,
+    "params_including_train_heads": 131678,
+    "peak_cuda_allocated_bytes": null,
+    "evaluation": {
+      "backbone": {
+        "mAP": 0.9538690447807312,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "fusion": {
+        "mAP": 0.9444444477558136,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "combined": {
+        "mAP": 0.9486111104488373,
+        "rank1": 1.0,
+        "valid_queries": 6
+      },
+      "fusion_gain_over_best_branch": -0.005257934331893921
+    }
+  }
+]
