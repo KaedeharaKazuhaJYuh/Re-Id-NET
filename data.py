@@ -1,5 +1,6 @@
 """Datasets, deterministic identity batches, and standard single-gallery ReID metrics."""
 from collections import defaultdict
+import hashlib
 import math
 from pathlib import Path
 import random
@@ -47,17 +48,18 @@ class Market1501(Dataset):
     folders = {"train": "bounding_box_train", "query": "query", "gallery": "bounding_box_test"}
     pattern = re.compile(r"^(-?\d+)_c(\d+)")
 
-    def __init__(self, root, split, size=(256, 128)):
-        if split not in self.folders:
+    @classmethod
+    def _scan(cls, root, split):
+        if split not in cls.folders:
             raise ValueError(f"Unknown split: {split}")
-        folder = Path(root).expanduser() / self.folders[split]
+        folder = Path(root).expanduser() / cls.folders[split]
         if not folder.is_dir():
             raise FileNotFoundError(f"Expected an existing Market-1501 split: {folder}")
         records = []
         for path in sorted(folder.iterdir()):
             if path.suffix.lower() not in {".jpg", ".jpeg", ".png"}:
                 continue
-            match = self.pattern.match(path.name)
+            match = cls.pattern.match(path.name)
             if match is None:
                 raise ValueError(f"Cannot parse Market-1501 identity/camera from {path.name}")
             pid, camera = map(int, match.groups())
@@ -66,6 +68,18 @@ class Market1501(Dataset):
             records.append((path, pid, camera))
         if not records:
             raise ValueError(f"No usable Market-1501 images found in {folder}")
+        return records
+
+    def __init__(self, root, split, size=(256, 128)):
+        self._assign(self._scan(root, split), split, size)
+
+    @classmethod
+    def _from_subset(cls, records, split, size):
+        subset = cls.__new__(cls)
+        subset._assign(records, split, size)
+        return subset
+
+    def _assign(self, records, split, size):
         relabel = {pid: i for i, pid in enumerate(sorted({x[1] for x in records}))}
         self.items = [(p, relabel[pid] if split == "train" else pid, camera)
                       for p, pid, camera in records]
@@ -84,6 +98,42 @@ class Market1501(Dataset):
             x = torch.frombuffer(bytearray(image.tobytes()), dtype=torch.uint8)
         x = x.reshape(*self.size, 3).permute(2, 0, 1).float().div_(255)
         return x, pid, camera
+
+
+def market_train_holdout(root, validation_count, seed, size=(256, 128), min_train_ids=2):
+    """Deterministic identity holdout, using only bounding_box_train records."""
+    records = Market1501._scan(root, 'train')
+    groups = defaultdict(list)
+    for record in records:
+        if record[1] <= 0:
+            raise ValueError("Training holdout expects positive identity labels in bounding_box_train.")
+        groups[record[1]].append(record)
+    eligible = [pid for pid in sorted(groups) if len({r[2] for r in groups[pid]}) >= 2]
+    if not 1 <= validation_count <= min(len(eligible), len(groups) - min_train_ids):
+        raise ValueError("Not enough cross-camera identities and remaining training identities for holdout.")
+    rng = random.Random(seed)
+    val_ids = sorted(rng.sample(eligible, validation_count))
+    val_set = set(val_ids)
+    query = [rng.choice(groups[pid]) for pid in val_ids]
+    query_paths = {r[0] for r in query}
+    train = [r for r in records if r[1] not in val_set]
+    gallery = [r for r in records if r[1] in val_set and r[0] not in query_paths]
+
+    def digest(rows):
+        values = ''.join(f"{p.name}\t{pid}\t{cam}\n" for p, pid, cam in rows)
+        return hashlib.sha256(values.encode('utf-8')).hexdigest()
+
+    protocol = dict(name="market1501_train_identity_holdout_v1", source="bounding_box_train",
+                    official_test_used=False, seed=seed, validation_count=validation_count,
+                    query_rule="one seeded image per held-out identity with at least two cameras",
+                    gallery_rule="all other images of held-out identities",
+                    ap_method="precision_at_hits_mean_over_valid_queries",
+                    train_id_count=len(groups) - validation_count, validation_ids=val_ids,
+                    train_images=len(train), query_images=len(query), gallery_images=len(gallery),
+                    train_sha256=digest(train), query_sha256=digest(query),
+                    gallery_sha256=digest(gallery))
+    return (*[Market1501._from_subset(rows, split, size)
+              for rows, split in zip((train, query, gallery), ('train', 'query', 'gallery'))], protocol)
 
 
 class PKBatchSampler(Sampler):

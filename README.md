@@ -17,6 +17,28 @@
 
 短测均未读取 query/gallery。P2×K2 中，每张图只有一个同身份候选和一个负类质心，不能构造 RATR 排序对。P3×K4 验证两项都有贡献，但与 P2×K2 的损失不能直接对比，也不替代论文的 P16×K4 对照。数据、权重和断点均未上传。
 
+## 预注册探索性对照：30 步训练内验证
+
+采用同一完整模型、同一 ImageNet Tiny 初始化、AdamW（基础学习率 3.5e-4，权重衰减 0.05）、训练种子 7、P16×K4，仅比较 `--variant none` 与 `--variant ratr`。两组各训练至累计第 30 步，`--epochs 160 --warmup 1`，首轮学习率为 3.5e-4。这里将 warmup 从论文的 20 个 epoch 缩至 1 个 epoch，只为了让固定小预算试验具有诊断意义，不是论文训练方案。各组使用独立的 checkpoint 和结果路径；每 10 步输出训练摘要。
+
+训练及验证只读 Market-1501 的 `bounding_box_train`。以拆分种子 20261121 选出 50 个至少由两个摄像头拍摄的身份；每个身份选一张作查询，其余作为验证库，所有留出身份不参与训练。固定拆分与指标；在第 30 步保存 checkpoint 后，每组另启动一次进程进行验证，不再执行任何优化器步。官方 query/gallery 不读取。仅报告两组训练摘要和训练内验证 mAP / Rank-1；50 个查询、单种子、30 步不足以判断方法优劣，也不用于复现论文分数。
+
+各组流程（`VARIANT` 分别设为 `none` 和 `ratr`，`RUN_DIR` 必须是彼此不同且已存在的路径）：
+
+```sh
+COMMON=(--backend official-tiny --device cuda --market-root "$MARKET" \
+  --imagenet-checkpoint "$IMAGENET" --structure full --variant "$VARIANT" \
+  --p 16 --k 4 --seed 7 --epochs 160 --warmup 1 --max-steps 30 \
+  --validation-identities 50 --validation-split-seed 20261121 \
+  --save-every-steps 10 --progress-every 10)
+python train.py "${COMMON[@]}" --resume-state "$RUN_DIR/state.pt" --skip-eval \
+  --out "$RUN_DIR/train-summary.json"
+python train.py "${COMMON[@]}" --resume-from "$RUN_DIR/state.pt" \
+  --eval-validation-at-limit --out "$RUN_DIR/holdout-step30.json"
+```
+
+先前按论文形状运行的容量预检已完成 P16×K4 的第 10 步，峰值 CUDA 已分配显存约 9.27 GiB。该预检未运行检索评价，不是上述两组对照的结果；当前没有对照 mAP 或 Rank-1。
+
 ## CPU 快速验证
 
 默认仅使用程序合成纹理，不需要图片、账号、GPU 或 GitHub；可用 Python 3.12。可从 [PyTorch 安装页](https://pytorch.org/get-started/locally/) 选择对应环境的 wheel，在虚拟环境中安装即可。

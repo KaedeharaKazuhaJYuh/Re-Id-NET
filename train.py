@@ -12,7 +12,7 @@ import torch
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
 
-from data import Market1501, PKBatchSampler, SyntheticReID, evaluate_reid
+from data import Market1501, PKBatchSampler, SyntheticReID, evaluate_reid, market_train_holdout
 from losses import batch_hard_triplet, cross_covariance, objective, ranking_regularizer
 from model import ReID
 
@@ -66,7 +66,7 @@ def evaluate(model, query, gallery, device, market):
     return {k: evaluate_reid(q[k], qp, qc, g[k], gp, gc) for k in q}
 
 
-def resume_config(args, tr, device):
+def resume_config(args, tr, device, protocol=None):
     # Save only safe-deserializable data. Market identity is based on the ordered
     # training filenames, not guessed from the total sample count.
     opts = ('backend', 'market_root', 'imagenet_checkpoint', 'structure', 'variant',
@@ -79,6 +79,8 @@ def resume_config(args, tr, device):
     if args.market_root:
         index = '\n'.join(p.name for p, _, _ in tr.items).encode('utf-8')
         config['train_index_sha256'] = hashlib.sha256(index).hexdigest()
+    if protocol is not None:
+        config["validation_protocol"] = protocol
     return config
 
 
@@ -110,7 +112,14 @@ def run(args):
     if args.backend == 'official-tiny' and device.type != 'cuda':
         raise ValueError("The official-tiny adapter uses the upstream CUDA selective scan.")
     size = (256, 128) if market or args.backend == 'official-tiny' else (64, 32)
-    if market:
+    protocol = None
+    if market and args.validation_identities:
+        tr, qu, ga, protocol = market_train_holdout(
+            args.market_root, args.validation_identities, args.validation_split_seed, size,
+            min_train_ids=args.p if args.p is not None else 16)
+        if args.skip_eval:
+            qu = ga = None
+    elif market:
         tr = Market1501(args.market_root, 'train', size)
         qu, ga = (None, None) if args.skip_eval else [Market1501(args.market_root, s, size)
                                                     for s in ('query', 'gallery')]
@@ -129,7 +138,7 @@ def run(args):
     aux = args.structure in ('full','hcen-aul')
     sasf = args.structure == 'full'
     state_path = args.resume_state or args.resume_from
-    config = resume_config(args, tr, device) if state_path else None
+    config = resume_config(args, tr, device, protocol) if state_path else None
     progress = dict(steps=0, epoch=0, offset=0, totals={}, epoch_log=[],
                     window_steps=0, window_loss=0.)
     state = None
@@ -248,7 +257,14 @@ def run(args):
                           "lr": opt.param_groups[0]['lr'], "partial": True,
                           **{k: v/progress['offset'] for k, v in progress['totals'].items()}})
     complete = progress['epoch'] == args.epochs
-    stats = (None if args.skip_eval or (state_path and not complete)
+    validation_at_limit = bool(args.eval_validation_at_limit and not complete
+                               and progress['steps'] == args.max_steps)
+    if validation_at_limit:
+        # A cap reached by this loop saved state above. If resuming exactly at
+        # the cap into a new output path, materialize that copy before eval.
+        if not state_path.is_file():
+            save_state()
+    stats = (None if args.skip_eval or (state_path and not complete and not validation_at_limit)
              else evaluate(model, query, gallery, device, market))
     if stats and "combined" in stats:
         stats["fusion_gain_over_best_branch"] = stats["combined"]["mAP"] - max(
@@ -265,13 +281,22 @@ def run(args):
             "imagenet_weights_supplied": args.imagenet_checkpoint is not None,
             "params_including_train_heads": sum(p.numel() for p in model.parameters()),
             "peak_cuda_allocated_bytes": torch.cuda.max_memory_allocated(device) if device.type=="cuda" else None,
-            "evaluation": stats}
+            "evaluation": stats,
+            **({"validation_protocol": protocol,
+                "evaluation_split": "market1501_train_identity_holdout",
+                "validation_evaluated_at_step_limit": validation_at_limit} if protocol else {})}
 
 
 def args_from(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--backend', choices=['reference','official-tiny'], default='reference')
     p.add_argument('--market-root', type=Path)
+    p.add_argument('--validation-identities', type=int, default=0,
+                   help='Hold out this many cross-camera IDs from Market bounding_box_train only; 0 keeps default.')
+    p.add_argument('--eval-validation-at-limit', action='store_true',
+                   help='Evaluate the train-only holdout after a saved cumulative --max-steps cap.')
+    p.add_argument('--validation-split-seed', type=int, default=20261121,
+                   help='Seed for validation identity and query selection, separate from the training seed.')
     p.add_argument('--imagenet-checkpoint', type=Path)
     p.add_argument('--checkpoint-out', type=Path, help='Final model export (not resume state).')
     p.add_argument('--resume-state', type=Path, help='Write atomic optimizer/training state here.')
@@ -317,6 +342,13 @@ def args_from(argv=None):
         p.error("Invalid temperature, learning rate, or loss weight.")
     if a.fusion_dim is not None and a.fusion_dim < 2:
         p.error("Fusion width must be at least 2.")
+    if a.eval_validation_at_limit and (
+            a.validation_identities <= 0 or not a.market_root or a.skip_eval
+            or a.max_steps is None or not state_paths):
+        p.error("--eval-validation-at-limit requires --validation-identities > 0, --market-root, "
+                "--max-steps and resume state; it cannot be used with --skip-eval.")
+    if a.validation_identities < 0 or (a.validation_identities and not a.market_root):
+        p.error("--validation-identities must be nonnegative and requires --market-root.")
     if a.market_root and a.backend != 'official-tiny':
         p.error("Market mode requires the official-tiny adapter; smoke reference uses synthetic data only.")
     if a.market_root and not a.imagenet_checkpoint:
