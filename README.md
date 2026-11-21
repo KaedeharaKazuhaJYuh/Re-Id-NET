@@ -3,7 +3,20 @@
 周非、蒲淋、刘清林，《多尺度特征融合的 Mamba-Transformer 行人重识别网络》，《电子测量与仪器学报》，2026-10-21 网络首发。
 [原文首发记录](https://link.cnki.net/urlid/11.2488.TN.20261020.1723.021)。重建时直接核读了用户保存的 13 页原文 PDF，而非二手摘要。未找到可核验的论文作者代码、训练配置或权重；本包是独立重建，不是官方源码或正式结果复现。
 
-## 已验证：本地 CPU 冒烟
+## 当前复现状态
+
+**Market-1501 训练链路已在 RTX 5070 Ti Laptop GPU 上跑通 10 步；尚未完成整轮训练，也未评估 mAP / Rank-1。** 这个短测只验证代码、数据、权重和断点能一起工作，不用于和论文精度对比。
+
+| 验证项 | 结果 |
+|---|---|
+| Mamba CUDA 算子 | 合成输入的前向输出与六组反向梯度均通过 CPU 对照，最大绝对误差约 `7.45e-9` |
+| 完整模型 | 合成小批次完成前向、反向和一次优化器更新 |
+| Market-1501 短测 | NVIDIA Tiny ImageNet-1K 初始化；完整结构 + RATR；P2×K2、10 步平均损失 19.0618，训练段 4.82 秒，PyTorch 峰值分配约 1.08 GiB |
+| 断点续训 | 笔记本已保存第 10 步本地断点；CPU 合成测试验证轮中、轮末恢复均与连续运行一致。CUDA 续跑一致性尚未验证 |
+
+短测未读取 query/gallery；P2×K2 与论文 P16×K4 不同。数据、权重和断点均未上传。
+
+## CPU 快速验证
 
 默认仅使用程序合成纹理，不需要图片、账号、GPU 或 GitHub；可用 Python 3.12。可从 [PyTorch 安装页](https://pytorch.org/get-started/locally/) 选择对应环境的 wheel，在虚拟环境中安装即可。
 
@@ -13,7 +26,7 @@ python -m unittest discover -v
 python run_smoke.py
 ```
 
-已用 PyTorch 2.6 CPU 验证 8 项测试，覆盖输入 256×128 时的四阶段空间尺寸、端到端有限梯度、P×K 采样、跨相机评估，以及四个损失选项的训练。快速模型在 64×32 合成纹理上各跑两步。附带 `smoke-results.json` 包含七组：五组对应表 2 的模块开关，另两组为路线 C。后四组用相同的完整结构、种子和优化预算。合成检索和训练排名诊断仅验证数据流，不作算法效果解释。
+已用 PyTorch 2.6 CPU 通过 12 项测试，覆盖四阶段空间尺寸、端到端有限梯度、P×K 采样、跨相机评估、四个损失选项、断点续训和保存失败保护。快速模型在 64×32 合成纹理上各跑两步。附带 `smoke-results.json` 包含七组：五组对应表 2 的模块开关，另两组为路线 C。后四组用相同的完整结构、种子和优化预算。合成检索和训练排名诊断仅验证数据流，不作算法效果解释。
 
 ## 原文对照
 
@@ -30,22 +43,31 @@ python run_smoke.py
 
 表 2 的 Market-1501（mAP/Rank-1）是骨干 88.3/94.9、完整 89.9/95.6。这是论文参考值，不是本包的运行结果。§2.3 的表后正文对 MSMT17/Duke 单独 HCEN 的增量与表 2 交换了顺序；以表列的原始分数为准（MSMT17 63.1→64.4；Duke 81.9→82.7）。
 
-## CUDA / 经许可的 Market-1501：未在本环境执行
+## CUDA 与 Market-1501 短程验证
 
-需要本地可正常工作的 CUDA PyTorch 和 [NVlabs MambaVision](https://github.com/NVlabs/MambaVision) 及其 CUDA selective-scan 依赖。按上游说明安装并核对 GPU 和 wheel 兼容性；包不自带或执行上游代码，也不自动下载数据、模型或更改远程仓库。数据从[数据作者的项目页](https://zheng-lab-anu.github.io/Project/project_reid.html)与其使用条件核对，仅传入已经获准使用的本地目录。预训练权重是 [NVIDIA Tiny ImageNet-1K](https://huggingface.co/nvidia/MambaVision-T-1K)，不是周非等人的 ReID 权重。
+Windows 上已验证的环境是 Docker Desktop 的 WSL 2 Linux 容器：Python 3.11、PyTorch 2.7.1+cu128、torchvision 0.22.1+cu128、[NVlabs MambaVision](https://github.com/NVlabs/MambaVision) 1.2.0，以及 [Mamba CUDA 预编译包](https://github.com/state-spaces/mamba/releases/tag/v2.2.6.post3) 2.2.6.post3（Linux x86-64、CPython 3.11、CXX11 ABI true）。这里有意替换 NVlabs 声明的 `mamba-ssm==2.2.4`，不要让通用安装命令将其覆盖。该 PyTorch 容器内另补了 GCC 和 libc 开发头文件供 Triton 初始化小型 C 辅助模块；没有从源码编译 Mamba CUDA 扩展。
 
-先用原结构、一轮、不开官方测试集跑预算预检：
+数据请从[发布者项目页](https://zheng-lab-anu.github.io/Project/project_reid.html)核对使用条件，并使用本地数据目录。预训练权重来自 [NVIDIA Tiny ImageNet-1K](https://huggingface.co/nvidia/MambaVision-T-1K/blob/main/model.safetensors)，不是周非等人的 ReID 权重。已验证的做法是读取 NVIDIA 的 `model.safetensors`（SHA-256 `4f6987be0a2ca2222f386eb750d028a05203b047d3c8dfb664c27e2295d02fc0`），去掉键名的 `model.` 前缀，再将纯张量字典存为本地 `.pt`。训练脚本仍使用 `weights_only=True` 读取；原版 `.pth.tar` 包含额外训练对象，不能直接通过此安全加载方式。
+
+先复跑 10 步预算预检，不开官方测试集：
+
 ```sh
-python train.py --backend official-tiny --device cuda --market-root /your/local/Market-1501-v15.09.15 --imagenet-checkpoint /your/local/mambavision_tiny_1k.pth.tar --epochs 1 --skip-eval --out preflight.json
+mkdir -p runs
+python train.py --backend official-tiny --device cuda \
+  --market-root /your/local/Market-1501-v15.09.15 \
+  --imagenet-checkpoint /your/local/mambavision_tiny_1k.weights-only.pt \
+  --p 2 --k 2 --max-steps 10 --skip-eval \
+  --resume-state runs/pilot.pt --save-every-steps 10 --progress-every 10 \
+  --out runs/pilot.json
 ```
-若显存不足，优先同步降低所有对照的 P，不改变 K=4；记录配置和实测时间。随后在训练身份内独立选定未披露参数，不用官方测试集调参；当前包 **未实现该验证集切分**。锁定设置后训完整原文基线和骨干对照、在官方 query/gallery 运行一次，记录 mAP 和 Rank-1。CLI 使用 `--structure backbone --variant none` 启动骨干对照；完整组默认 `--structure full --variant ratr`。日后用 `--variant none|ratr|cov|cov_consistency` 在同样的完整结构和三个种子上跑路线 C；`cov_consistency` 是交叉协方差正则加身份概率 JS 一致性，不是原论文损失。Duke/MSMT 不在本实现的数据入口里。
 
-如需作者级别复现，最值得补的不是新 GitHub 仓库，而是作者代码/最终权重、RATR 温度与隐藏实现、末层权重迁移说明。正式模型没有跑出论文指标以前，不把 CPU 合成测试当成复现成功。
+正式基线需新建任务、使用论文批次和计划，不把 P2×K2 的短测断点接到 P16×K4 上。若显存不足，优先同步降低所有对照的 P，不改变 K=4；记录配置和实测时间。随后在训练身份内独立选定未披露参数，不用官方测试集调参；当前包 **未实现该验证集切分**。锁定设置后训完整原文基线和骨干对照、在官方 query/gallery 运行一次，记录 mAP 和 Rank-1。CLI 使用 `--structure backbone --variant none` 启动骨干对照；完整组默认 `--structure full --variant ratr`。日后用 `--variant none|ratr|cov|cov_consistency` 在同样的完整结构和三个种子上跑路线 C；`cov_consistency` 是交叉协方差正则加身份概率 JS 一致性，不是原论文损失。Duke/MSMT 不在本实现的数据入口里。
+
+如需作者级别复现，最值得补的不是新 GitHub 仓库，而是作者代码/最终权重、RATR 温度与隐藏实现、末层权重迁移说明。没有正式评估前，不把 CPU 验证或 10 步短测当成论文指标复现。
 
 ## 早期诊断
 
 `diagnostics/numpy-route-c/` 保留第一版 NumPy 合成诊断与结果，仅供比较；正式实现以仓库根目录的 PyTorch 版本为准。
-
 
 ## 断点续训与进度
 
